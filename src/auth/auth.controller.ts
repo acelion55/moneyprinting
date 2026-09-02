@@ -19,7 +19,7 @@ export class AuthController {
       sameSite: isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return { user: result.user, message: 'Registration successful' };
+    return { user: result.user, message: 'Registration successful', accessToken: result.accessToken };
   }
 
   @Post('login')
@@ -32,7 +32,8 @@ export class AuthController {
       sameSite: isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return { user: result.user, message: 'Login successful' };
+    // Also return token in body for cross-domain localStorage fallback
+    return { user: result.user, message: 'Login successful', accessToken: result.accessToken };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -50,6 +51,7 @@ export class AuthController {
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
     });
-    return { message: 'Logged out successfully' };
+    // Also clear localStorage on client via response
+    return { message: 'Logged out successfully', clearToken: true };
   }
 }
